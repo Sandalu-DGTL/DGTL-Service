@@ -4,6 +4,7 @@ import { Search, ShieldCheck, Users } from 'lucide-react'
 import { AppHeader } from '@/components/app-header'
 import { getAdminClients } from '@/lib/api'
 import { requireViewer } from '@/lib/auth'
+import { DEMO_CLIENTS } from '@/lib/demo-data'
 import { updateClientAction } from './actions'
 
 export const metadata: Metadata = { title: 'Admin console' }
@@ -15,7 +16,8 @@ export default async function AdminDashboardPage() {
   const viewer = await requireViewer()
   if (viewer.role !== 'admin') redirect('/user')
 
-  const clients = await getAdminClients()
+  const isDemo = viewer.id === 'demo-admin'
+  const clients = isDemo ? DEMO_CLIENTS : await getAdminClients()
   const activeCount = clients.filter((client) => client.status === 'active').length
   const assignedCount = clients.filter((client) => client.services.length > 0).length
 
@@ -23,6 +25,12 @@ export default async function AdminDashboardPage() {
     <main className="portal-page admin-portal">
       <AppHeader name={viewer.fullName || viewer.email} role={viewer.role} />
       <section className="portal-content">
+        {isDemo && (
+          <div className="demo-banner" role="status">
+            <strong>Admin demo mode</strong>
+            <span>These clients are sample data. Changes reset automatically.</span>
+          </div>
+        )}
         <div className="dashboard-heading admin-heading">
           <div>
             <span className="eyebrow">DGTL administration</span>

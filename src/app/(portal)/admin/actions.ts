@@ -7,6 +7,10 @@ import { updateAdminClient } from '@/lib/api'
 export async function updateClientAction(formData: FormData) {
   const viewer = await requireViewer()
   if (viewer.role !== 'admin') throw new Error('FORBIDDEN')
+  if (viewer.id === 'demo-admin') {
+    revalidatePath('/admin')
+    return
+  }
 
   const clientId = String(formData.get('clientId') ?? '')
   const fullName = String(formData.get('fullName') ?? '').trim()

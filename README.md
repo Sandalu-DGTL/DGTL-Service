@@ -16,6 +16,17 @@ Next.js frontend for `auth.dgtl.lk`: public landing page, client sign-in/sign-up
 
 Open `http://localhost:3000`.
 
+## Local demo accounts
+
+When the app runs with `npm run dev`, the sign-in page exposes two development-only accounts:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@dgtl.lk` | `Admin@123` |
+| Client | `client@dgtl.lk` | `Client@123` |
+
+The demo session is stored in an HTTP-only cookie, uses sample dashboard data and is disabled automatically in production builds. Real authentication still uses Supabase.
+
 ## Supabase Auth configuration
 
 - Set the Site URL to the production frontend origin.

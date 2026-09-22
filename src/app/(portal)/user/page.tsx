@@ -22,6 +22,12 @@ export default async function UserDashboardPage() {
     <main className="portal-page">
       <AppHeader name={viewer.fullName || viewer.email} role={viewer.role} />
       <section className="portal-content">
+        {viewer.id === 'demo-client' && (
+          <div className="demo-banner" role="status">
+            <strong>Client demo mode</strong>
+            <span>These service links and account details are sample data.</span>
+          </div>
+        )}
         <div className="dashboard-heading">
           <div>
             <span className="eyebrow">Client workspace</span>

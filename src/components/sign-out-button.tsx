@@ -8,6 +8,7 @@ export function SignOutButton() {
   const router = useRouter()
 
   async function signOut() {
+    await fetch('/auth/demo', { method: 'DELETE' })
     if (isSupabaseConfigured()) {
       await createClient().auth.signOut()
     }

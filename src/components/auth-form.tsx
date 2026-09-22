@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowRight, Building2, Eye, EyeOff } from 'lucide-react'
+import { DEMO_ACCOUNTS, findDemoAccount, isDemoAvailable } from '@/lib/demo-data'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 type Mode = 'login' | 'signup'
@@ -18,6 +19,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [message, setMessage] = useState<string | null>(null)
 
   const isLogin = mode === 'login'
+  const demoAvailable = isLogin && isDemoAvailable()
 
   function getSupabase() {
     if (!isSupabaseConfigured()) {
@@ -29,6 +31,41 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   async function submitCredentials(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (demoAvailable) {
+      const demoAccount = findDemoAccount(email, password)
+      const isDemoEmail = Object.values(DEMO_ACCOUNTS).some(
+        (account) => account.email === email.trim().toLowerCase(),
+      )
+
+      if (demoAccount) {
+        setBusy(true)
+        setMessage(null)
+        const response = await fetch('/auth/demo', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        })
+
+        if (!response.ok) {
+          const result = (await response.json()) as { error?: string }
+          setMessage(result.error ?? 'Demo login failed.')
+          setBusy(false)
+          return
+        }
+
+        const result = (await response.json()) as { role: 'admin' | 'client' }
+        router.replace(result.role === 'admin' ? '/admin' : '/user')
+        router.refresh()
+        return
+      }
+
+      if (isDemoEmail) {
+        setMessage('The password does not match this demo account.')
+        return
+      }
+    }
+
     const supabase = getSupabase()
     if (!supabase) return
 
@@ -115,6 +152,36 @@ export function AuthForm({ mode }: { mode: Mode }) {
             : 'Create your client account. Your DGTL team will activate the services you need.'}
         </p>
       </div>
+
+      {demoAvailable && (
+        <section className="demo-login-panel" aria-label="Demo login accounts">
+          <div>
+            <strong>Explore the demo</strong>
+            <small>Choose an account, then press Sign in.</small>
+          </div>
+          <div className="demo-account-grid">
+            {(['admin', 'client'] as const).map((role) => {
+              const account = DEMO_ACCOUNTS[role]
+              return (
+                <button
+                  key={role}
+                  type="button"
+                  className="demo-account"
+                  onClick={() => {
+                    setEmail(account.email)
+                    setPassword(account.password)
+                    setMessage(null)
+                  }}
+                >
+                  <span>{account.label}</span>
+                  <code>{account.email}</code>
+                  <small>{account.password}</small>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+      )}
 
       <button className="sso-button" type="button" onClick={continueWithGoogle} disabled={busy}>
         <span className="google-mark" aria-hidden="true">G</span>
