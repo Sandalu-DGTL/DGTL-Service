@@ -6,7 +6,7 @@ Next.js frontend for `auth.dgtl.lk`: public landing page, client sign-in/sign-up
 
 1. Copy `.env.example` to `.env.local`.
 2. Add the Supabase project URL and publishable key.
-3. Ensure `DGTL-Backend` is running on port `4000`.
+3. Ensure `DGTL-Service-Backend` is running on port `4000`.
 4. Install and run:
 
    ```bash
