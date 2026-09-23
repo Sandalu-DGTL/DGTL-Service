@@ -2,7 +2,7 @@ import { BarChart3, LayoutDashboard, ShieldCheck, Users } from 'lucide-react'
 import { Brand } from '@/components/brand'
 import { AuthForm } from '@/components/auth-form'
 
-export function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
+export function AuthShell({ mode, next = '/user' }: { mode: 'login' | 'signup'; next?: string }) {
   return (
     <main className="auth-page">
       <section className="auth-story">
@@ -23,7 +23,7 @@ export function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
         <p className="auth-story-foot">Protected by Supabase Auth and database-level access policies.</p>
       </section>
       <section className="auth-panel">
-        <AuthForm mode={mode} />
+        <AuthForm mode={mode} next={next} />
       </section>
     </main>
   )

@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation'
 import { ArrowRight, Building2, Eye, EyeOff } from 'lucide-react'
 import { DEMO_ACCOUNTS, findDemoAccount, isDemoAvailable } from '@/lib/demo-data'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
+import { safeAuthReturn } from '@/lib/auth-return'
 
 type Mode = 'login' | 'signup'
 
-export function AuthForm({ mode }: { mode: Mode }) {
+export function AuthForm({ mode, next = '/user' }: { mode: Mode; next?: string }) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +20,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [message, setMessage] = useState<string | null>(null)
 
   const isLogin = mode === 'login'
-  const demoAvailable = isLogin && isDemoAvailable()
+  const returnTo = safeAuthReturn(next)
+  const demoAvailable = isLogin && isDemoAvailable() && !returnTo.startsWith('/oauth/')
+
+  function callbackUrl() {
+    const url = new URL('/auth/callback', window.location.origin)
+    url.searchParams.set('next', returnTo)
+    return url.toString()
+  }
 
   function getSupabase() {
     if (!isSupabaseConfigured()) {
@@ -79,7 +87,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         setBusy(false)
         return
       }
-      router.replace('/user')
+      window.location.assign(returnTo)
       router.refresh()
       return
     }
@@ -87,7 +95,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: callbackUrl() },
     })
 
     setBusy(false)
@@ -97,7 +105,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     }
 
     if (data.session) {
-      router.replace('/user')
+      window.location.assign(returnTo)
       router.refresh()
       return
     }
@@ -111,7 +119,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setBusy(true)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl() },
     })
     if (error) {
       setMessage(error.message)
@@ -131,7 +139,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setBusy(true)
     const { data, error } = await supabase.auth.signInWithSSO({
       domain,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl() },
     })
     if (error || !data?.url) {
       setMessage(error?.message ?? 'No SSO provider is configured for this domain.')
@@ -249,7 +257,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
       <p className="auth-switch">
         {isLogin ? 'New to DGTL?' : 'Already have an account?'}{' '}
-        <Link href={isLogin ? '/signup' : '/login'}>
+        <Link href={`${isLogin ? '/signup' : '/login'}?next=${encodeURIComponent(returnTo)}`}>
           {isLogin ? 'Create account' : 'Sign in'}
         </Link>
       </p>
