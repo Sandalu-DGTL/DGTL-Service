@@ -1,4 +1,5 @@
-import type { AdminClient, Viewer } from '@/lib/api'
+import type { AdminClient, ServiceAccess, Viewer } from '@/lib/api'
+import { SERVICE_CATALOG } from '@/lib/service-catalog'
 
 export const DEMO_ACCOUNTS = {
   admin: {
@@ -17,32 +18,12 @@ export const DEMO_ACCOUNTS = {
 
 export type DemoRole = keyof typeof DEMO_ACCOUNTS
 
-const serviceCatalog = {
-  cms: {
-    key: 'cms',
-    name: 'Content Management',
-    description: 'Plan, publish and maintain your digital content.',
-    url: 'https://cms.dgtl.lk',
-  },
-  crm: {
-    key: 'crm',
-    name: 'Customer Operations',
-    description: 'Keep customer relationships and opportunities visible.',
-    url: 'https://crm.dgtl.lk',
-  },
-  seo: {
-    key: 'seo',
-    name: 'Search Performance',
-    description: 'Track search visibility and turn insights into action.',
-    url: 'https://seo.dgtl.lk',
-  },
-  hr: {
-    key: 'hr',
-    name: 'People Operations',
-    description: 'Access essential people and HR workflows.',
-    url: 'https://hr.dgtl.lk',
-  },
-} as const
+const serviceCatalog: Record<string, ServiceAccess> = Object.fromEntries(
+  SERVICE_CATALOG.map((service) => [service.key, {
+    ...service,
+    url: `https://${service.key === 'cms' ? 'seo' : service.key}.dgtl.lk/`,
+  }]),
+)
 
 export const DEMO_VIEWERS: Record<DemoRole, Viewer> = {
   admin: {

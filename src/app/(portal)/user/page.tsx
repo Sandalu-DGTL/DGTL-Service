@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { ArrowUpRight, BarChart3, LayoutDashboard, ShieldCheck, Users } from 'lucide-react'
 import { AppHeader } from '@/components/app-header'
 import { requireViewer } from '@/lib/auth'
+import { getDashboardServices } from '@/lib/service-catalog'
 
 export const metadata: Metadata = { title: 'My services' }
 export const dynamic = 'force-dynamic'
@@ -17,6 +18,7 @@ const serviceIcons = {
 export default async function UserDashboardPage() {
   const viewer = await requireViewer()
   if (viewer.role === 'admin') redirect('/admin')
+  const services = getDashboardServices(viewer.services)
 
   return (
     <main className="portal-page">
@@ -32,7 +34,7 @@ export default async function UserDashboardPage() {
           <div>
             <span className="eyebrow">Client workspace</span>
             <h1>Welcome back, {viewer.fullName?.split(' ')[0] || 'there'}.</h1>
-            <p>Everything your DGTL team has activated for your account is here.</p>
+            <p>Your CMS, SEO, HR and CRM tools, together in one workspace.</p>
           </div>
           <span className={`status-badge ${viewer.status}`}>{viewer.status}</span>
         </div>
@@ -43,15 +45,9 @@ export default async function UserDashboardPage() {
             <h2>Account access is paused</h2>
             <p>Contact your DGTL account manager to restore service access.</p>
           </div>
-        ) : viewer.services.length === 0 ? (
-          <div className="empty-state">
-            <LayoutDashboard size={30} />
-            <h2>Your workspace is being prepared</h2>
-            <p>Your DGTL team will assign services here as soon as they are ready.</p>
-          </div>
         ) : (
           <div className="dashboard-service-grid">
-            {viewer.services.map((service) => {
+            {services.map((service) => {
               const Icon = serviceIcons[service.key as keyof typeof serviceIcons] ?? LayoutDashboard
               const content = (
                 <>
@@ -59,7 +55,9 @@ export default async function UserDashboardPage() {
                   <span className="service-code">{service.key.toUpperCase()}</span>
                   <h2>{service.name}</h2>
                   <p>{service.description}</p>
-                  <span className="open-label">Open service <ArrowUpRight size={17} /></span>
+                  <span className="open-label">
+                    {service.url ? <>Open {service.key.toUpperCase()} <ArrowUpRight size={17} aria-hidden="true" /></> : 'Coming soon'}
+                  </span>
                 </>
               )
 
@@ -68,9 +66,9 @@ export default async function UserDashboardPage() {
                   {content}
                 </a>
               ) : (
-                <div className="dashboard-service-card disabled" key={service.key}>
+                <div className="dashboard-service-card disabled" key={service.key} aria-disabled="true">
                   {content}
-                  <small>URL not configured</small>
+                  <small>Contact your DGTL team to enable this tool.</small>
                 </div>
               )
             })}

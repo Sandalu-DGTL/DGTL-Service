@@ -5,12 +5,13 @@ import { AppHeader } from '@/components/app-header'
 import { getAdminClients } from '@/lib/api'
 import { requireViewer } from '@/lib/auth'
 import { DEMO_CLIENTS } from '@/lib/demo-data'
+import { SERVICE_CATALOG } from '@/lib/service-catalog'
 import { updateClientAction } from './actions'
 
 export const metadata: Metadata = { title: 'Admin console' }
 export const dynamic = 'force-dynamic'
 
-const serviceOptions = ['cms', 'crm', 'seo', 'hr']
+const serviceOptions = SERVICE_CATALOG.map(({ key }) => key)
 
 export default async function AdminDashboardPage() {
   const viewer = await requireViewer()
