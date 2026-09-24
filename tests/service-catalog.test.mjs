@@ -12,9 +12,17 @@ test('keeps assigned destinations and additional service types', () => {
   const service = { key: 'seo', name: 'SEO', description: '', url: 'https://seo.dgtl.lk/' }
   const extra = { ...service, key: 'analytics' }
   const result = getDashboardServices([service, extra])
-  assert.equal(result.find(({ key }) => key === 'seo').url, service.url)
+  assert.equal(result.find(({ key }) => key === 'seo').url, 'https://seo.dgtl.lk/sso')
+  assert.equal(result.at(-1).url, service.url)
   assert.equal(result.at(-1).key, 'analytics')
   assert.equal(result.length, 5)
+})
+
+test('does not replace other hosts or missing SEO assignments', () => {
+  for (const url of [null, 'https://example.com/seo']) {
+    const result = getDashboardServices([{ key: 'seo', name: 'SEO', description: '', url }])
+    assert.equal(result.find(({ key }) => key === 'seo').url, url)
+  }
 })
 
 test('rejects executable, insecure, malformed and credential-bearing URLs', () => {

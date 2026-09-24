@@ -14,7 +14,17 @@ export function getDashboardServices(assigned: ServiceAccess[]) {
   return [
     ...SERVICE_CATALOG.map((service) => byKey.get(service.key) ?? service),
     ...assigned.filter((service) => !knownKeys.has(service.key)),
-  ].map((service) => ({ ...service, url: safeServiceUrl(service.url) }))
+  ].map((service) => {
+    const url = safeServiceUrl(service.url)
+    // A hub launch must establish the current central identity, even when
+    // this browser still has another user's SEO session.
+    return {
+      ...service,
+      url: service.key === 'seo' && url && new URL(url).origin === 'https://seo.dgtl.lk'
+        ? 'https://seo.dgtl.lk/sso'
+        : url,
+    }
+  })
 }
 
 function safeServiceUrl(value: string | null): string | null {
