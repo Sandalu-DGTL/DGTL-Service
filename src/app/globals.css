@@ -1,15 +1,22 @@
 :root {
-  --ink: #0d1b2e;
-  --muted: #5b6b82;
-  --line: #dbe4ef;
-  --soft: #f3f7fb;
-  --blue: #2563eb;
-  --blue-dark: #1747b0;
-  --navy: #09182d;
+  /* DGTL Platform Design Guide v1: Bawa Earth foundation. */
+  --ink: #1a1a2e;
+  --muted: #5c5c6b;
+  --line: #e5e1da;
+  --soft: #f0ede8;
+  --paper: #fafaf8;
+  --canvas: #eceae3;
+  --control: #807a6f;
+  --accent: #c4a35a;
+  --action: #2d6a4f;
+  --action-hover: #214f3b;
+  --blue: var(--action);
+  --blue-dark: var(--action-hover);
+  --navy: #15321f;
   --white: #ffffff;
-  --success: #087f5b;
-  --danger: #b42318;
-  --shadow: 0 24px 70px rgba(14, 35, 68, 0.12);
+  --success: #214f3b;
+  --danger: #8a2d2d;
+  --shadow: 0 8px 24px rgba(21, 50, 31, 0.08);
 }
 
 * { box-sizing: border-box; }
@@ -17,10 +24,10 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   color: var(--ink);
-  background: var(--white);
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--paper);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
@@ -377,4 +384,88 @@ a.dashboard-service-card:hover { transform: translateY(-4px); box-shadow: var(--
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+}
+
+/* Bawa Earth presentation adapter. Routes, form actions and access states are unchanged. */
+:is(a, button, input, select, summary):focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink);
+}
+.eyebrow { letter-spacing: 0.025em; text-transform: none; font-weight: 600; }
+.eyebrow.light { color: #e4ce9d; }
+.primary-button, .secondary-button, .text-button, .sso-button, .icon-button {
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.primary-button { box-shadow: none; }
+.primary-button.small, .secondary-button.compact, .icon-button, .text-button { min-height: 44px; }
+.primary-button:hover, .secondary-button:hover, .service-card:hover, a.dashboard-service-card:hover { transform: none; }
+.secondary-button, .sso-button, .status-select select { border-color: var(--control); }
+.secondary-button:hover, .sso-button:hover { border-color: var(--action); background: var(--soft); }
+.landing-hero { background: var(--paper); }
+.landing-hero::before, .portal-preview::after, .auth-story::after { display: none; }
+.hero-copy h1 { font-size: clamp(32px, 4.5vw, 52px); line-height: 1.12; letter-spacing: -0.03em; }
+.portal-preview { transform: none; backdrop-filter: none; border-color: var(--line); border-radius: 16px; background: var(--white); box-shadow: var(--shadow); }
+.service-card, .dashboard-service-card, .admin-stats article, .client-table-wrap { border-radius: 12px; }
+.service-card:hover, a.dashboard-service-card:hover { border-color: var(--action); box-shadow: var(--shadow); }
+.service-icon.blue, .service-icon.violet, .service-icon.cyan, .service-icon.amber,
+.dashboard-service-icon, .admin-stats article > span, .avatar, .preview-avatar {
+  color: var(--action-hover); background: #eaf3de; border-radius: 8px;
+}
+.service-icon.amber { color: #7a5a16; background: #faeeda; }
+.service-code { letter-spacing: 0.04em; }
+.security-section { border-radius: 16px; }
+.security-icon, .security-flow b { color: #e4ce9d; background: #254931; }
+.security-copy p, .security-flow span, .auth-story-copy > p, .auth-story .brand-copy small,
+.auth-story-foot { color: #d7e1d5; }
+.auth-service-grid svg { color: #e4ce9d; }
+.auth-panel, .portal-page { background: var(--paper); }
+.auth-story-copy h2 { font-size: clamp(32px, 3.6vw, 48px); line-height: 1.15; letter-spacing: -0.025em; }
+.auth-heading h1 { font-size: 32px; line-height: 1.2; letter-spacing: -0.025em; }
+.auth-form label, .enterprise-sso summary { color: var(--ink); font-size: 14px; }
+.auth-form input, .enterprise-sso input, .status-select select {
+  border-color: var(--control); border-radius: 8px; font-size: 16px; min-height: 44px;
+}
+.auth-form input:focus-visible, .enterprise-sso input:focus-visible, .client-row input:focus-visible,
+.client-row select:focus-visible { outline: 2px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 5px var(--ink); }
+.password-toggle { top: 2px; right: 2px; width: 44px; height: 44px; border-radius: 8px; }
+.password-field input { padding-right: 50px; }
+.enterprise-sso summary { min-height: 44px; }
+.divider { color: var(--muted); }
+.form-message, .demo-banner, .demo-login-panel { color: #0c447c; background: #e6f1fb; border-color: #0c447c; }
+.demo-banner strong, .demo-login-panel strong { color: #0c447c; }
+.app-header { border-bottom: 3px solid var(--accent); }
+.app-nav > a { display: inline-flex; align-items: center; min-height: 44px; color: var(--action); }
+.portal-content { padding-top: 40px; }
+.dashboard-heading h1 { font-size: clamp(28px, 3vw, 36px); line-height: 1.2; letter-spacing: -0.025em; }
+.dashboard-service-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
+.dashboard-service-card { min-width: 0; min-height: 260px; padding: 24px; }
+.dashboard-service-icon { margin-bottom: 24px; }
+.dashboard-service-card p { overflow-wrap: anywhere; }
+.status-badge.active { color: #214f3b; background: #eaf3de; }
+.status-badge.invited { color: #7a5a16; background: #faeeda; }
+.status-badge.suspended { color: #8a2d2d; background: #f7e7e5; }
+.service-checks span { min-height: 44px; display: flex; align-items: center; padding: 8px 12px; border-color: var(--control); font-size: 13px; }
+.service-checks input:checked + span { color: #214f3b; border-color: #214f3b; background: #eaf3de; }
+.service-checks input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 3px; }
+.client-identity input { min-height: 44px; }
+.table-heading p, .user-pill small { font-size: 13px; }
+.empty-state { border-color: var(--control); border-radius: 12px; background: var(--white); }
+@media (max-width: 980px) {
+  .dashboard-service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+  .dashboard-service-grid { grid-template-columns: 1fr; }
+  .portal-content { width: calc(100% - 32px); }
+  .hero-copy h1 { font-size: 36px; }
+  .auth-story { min-height: auto; }
+  .auth-story-copy { padding: 40px 0; }
+  .auth-story-copy h2 { font-size: 32px; }
+  .auth-panel { min-height: auto; padding: 40px 16px; }
+  .app-nav > a { display: none; }
+}
+@media (forced-colors: active) {
+  :is(a, button, input, select, summary):focus-visible { outline: 2px solid Highlight; box-shadow: none; }
 }
